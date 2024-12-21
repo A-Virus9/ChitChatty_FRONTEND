@@ -9,7 +9,7 @@ import axios from "axios"
 
 
 export const api = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "https://chitchatty-backend.onrender.com:10000",
 });
 
 function App() {
