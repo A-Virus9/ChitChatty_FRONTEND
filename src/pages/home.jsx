@@ -6,7 +6,7 @@ import ChatBox from "../components/chatbox";
 import { io } from "socket.io-client";
 import { useEffect } from "react";
 
-export const socket = io.connect(import.meta.env.BACKEND_URL, {
+export const socket = io.connect("http://localhost:8000", {
   withCredentials: true,
 });
 
