@@ -1,0 +1,25 @@
+.navbar {
+  height: 5rem;
+  width: 100%;
+  background-color: rgb(22, 22, 22);
+  border-radius: 0;
+}
+
+.home {
+  margin: 7rem 25rem;
+  display: flex;
+  height: 70rem;
+  /* border: 1px solid rgb(75, 75, 75) */
+}
+
+@media (max-width: 1600px) {
+  .home{
+    margin: 7rem 15rem;
+  }
+}
+
+@media (max-width: 850px) {
+  .home{
+    margin: 3rem 15rem;
+  }
+}

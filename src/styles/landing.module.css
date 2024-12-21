@@ -1,0 +1,63 @@
+.landing {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 3rem;
+  padding: 2rem;
+  background-color: rgb(39, 39, 39);
+  text-align: center;
+  box-shadow: 0 0 10rem 0 black;
+}
+
+.landingText {
+  font-size: 5.5rem;
+  color: white;
+  margin: 0 0 3rem 0;
+  padding: 0;
+  text-align: left;
+}
+
+.errText {
+  text-align: start;
+  margin: -1rem 0 0.5rem 1rem;
+  color: rgb(255, 76, 76);
+  font-size: 1.3rem;
+}
+
+.submit {
+  border-radius: 1rem;
+  height: 3.5rem;
+  width: 7rem;
+  font-size: 1.5rem;
+  color: rgb(100, 100, 100);
+  background-color: rgb(79, 223, 79);
+  border: none;
+  font-weight: 700;
+  margin-top: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.submit:hover {
+  scale: 1.03;
+}
+
+.submit:active {
+  scale: 1;
+}
+
+.alt_text {
+  color: rgb(177, 177, 177);
+  font-size: 1.3rem;
+}
+
+.alt_link:link,
+.alt_link:visited {
+  color: white;
+  display: inline-block;
+}
+
+.alt_link:link:hover,
+.alt_link:visited:hover {
+  scale: 1.03;
+}

@@ -1,0 +1,128 @@
+.chatbox {
+  flex: 2.5;
+  display: flex;
+  flex-direction: column;
+}
+
+.topBar {
+  min-height: 5.4rem;
+  background-color: rgb(31, 31, 31);
+}
+
+.chatArea {
+  background-color: rgb(22, 22, 22);
+  flex: 1;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+  overflow-y: auto;
+  scrollbar-color: rgb(75, 75, 75) rgb(22, 22, 22);
+  scrollbar-width: thin; 
+}
+
+.message {
+  min-height: 3rem;
+  max-width: 40rem;
+  padding: 1rem 1.3rem;
+  border-radius: 0.4rem;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+.send {
+  background-color: rgb(79, 223, 79);
+  align-self: flex-end;
+}
+
+.receive {
+  background-color: rgb(39, 39, 39);
+  align-self: flex-start;
+}
+
+.messageText {
+  color: white;
+  font-size: 1.5rem;
+}
+
+.time {
+  align-self: flex-end;
+  font-size: 1rem;
+}
+
+.send > .time {
+  color: rgb(63, 63, 63);
+}
+
+.receive > .time {
+  margin-right: 0.7rem;
+  color: rgb(114, 114, 114);
+}
+
+.typeArea {
+  background-color: rgb(31, 31, 31);
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+}
+
+.message_input {
+  height: 3.6rem;
+  flex: 1;
+  margin-right: 0.5rem;
+  border-radius: 5rem;
+  padding: 0 1.5rem .16rem 1.5rem;
+  font-size: 1.5rem;
+  border: none;
+}
+
+.message_input:focus {
+  outline: none;
+}
+
+.message_input:focus::placeholder {
+  color: transparent;
+}
+
+.emoji_container {
+  position: relative;
+}
+
+.emoji_button:hover, .send_button:hover{
+  scale: 1.05
+}
+
+.emoji_button, .emoji_button:active{
+  width: 2.7rem;
+  margin-right: 1rem;
+  scale: 1
+}
+
+.send_button:active{
+  scale: 1
+}
+
+.emoji_container aside {
+  position: absolute;
+  bottom: 5.5rem;
+  right: -4.3rem;
+  z-index: 1;
+}
+
+.send_button {
+  width: 3rem;
+  position: relative;
+  bottom: 0.1rem;
+}
+
+.no_user_selected{
+  background-color: rgb(22, 22, 22);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 2rem;
+  height: 100%
+}
