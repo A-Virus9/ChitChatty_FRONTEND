@@ -6,7 +6,9 @@ import ChatBox from "../components/chatbox";
 import { io } from "socket.io-client";
 import { useEffect } from "react";
 
-export const socket = io.connect("https://chitchatty-backend.onrender.com", {
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://chitchatty-backend.onrender.com"
+
+export const socket = io.connect(BACKEND_URL, {
   withCredentials: true,
 });
 
