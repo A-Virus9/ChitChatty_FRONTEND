@@ -107,6 +107,16 @@ function ChatBox() {
               placeholder="Type a message..."
               value={messageValue}
               onChange={(e) => setMessageValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSend(
+                    messageValue,
+                    setMessageValue,
+                    setMessages,
+                    currentChat
+                  );
+                }
+              }}
               className={styles.message_input}
             />
             <EmojiInputButton setMessageValue={setMessageValue} />
