@@ -2,10 +2,17 @@ import styles from "../styles/landing.module.css";
 import Field from "../components/field";
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../App";
 
-async function handleSignup(username, email, password, confirmPassword, setErr) {
+async function handleSignup(
+  username,
+  email,
+  password,
+  confirmPassword,
+  setErr,
+  navigate
+) {
   const data = {
     username,
     email,
@@ -23,7 +30,9 @@ async function handleSignup(username, email, password, confirmPassword, setErr) 
       const res = await api.post("/users/signup", data, {
         withCredentials: true,
       });
-      if (res.data.status === "success") console.log(res.data.status);
+      if (res.data.status === "success") {
+        navigate("../home");
+      }
     } catch (err) {
       console.log(err.response.data);
       if (err.response.data.message.endsWith("Email malformed"))
@@ -45,6 +54,7 @@ function SignUp() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [err, setErr] = useState("");
+  const navigate = useNavigate();
 
   return (
     <>
@@ -77,7 +87,14 @@ function SignUp() {
           value="Sign Up"
           className={styles.submit}
           onClick={() =>
-            handleSignup(username, email, password, confirmPassword, setErr)
+            handleSignup(
+              username,
+              email,
+              password,
+              confirmPassword,
+              setErr,
+              navigate
+            )
           }
         />
         <div className={styles.alt_text}>

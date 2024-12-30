@@ -19,6 +19,7 @@
   overflow-y: auto;
   scrollbar-color: rgb(75, 75, 75) rgb(22, 22, 22);
   scrollbar-width: thin; 
+  scroll-behavior: smooth
 }
 
 .message {

@@ -5,12 +5,20 @@ import { api } from "../App";
 import { useSelector } from "react-redux";
 import { socket } from "../pages/home";
 
+function scrollDown(containerRef, type) {
+  setTimeout(() => {
+    containerRef.current.scrollTo({
+      top: containerRef.current.scrollHeight,
+      behavior: type,
+    });
+  }, 0);
+}
+
 async function handleUserChange(currentChat, setMessages) {
   const res = await api.get(`/chats/getMessages?username=${currentChat}`, {
     withCredentials: true,
   });
   setMessages(res.data.messages);
-  console.log(res);
 }
 
 function Message({ data }) {
@@ -47,7 +55,12 @@ function EmojiInputButton({ setMessageValue }) {
   );
 }
 
-function handleSend(messageValue, setMessagevalue, setMessages, currentChat) {
+function handleSend(
+  messageValue,
+  setMessagevalue,
+  setMessages,
+  currentChat,
+) {
   const data = {
     messageValue,
     receiver: currentChat,
@@ -60,7 +73,7 @@ function handleSend(messageValue, setMessagevalue, setMessages, currentChat) {
   setMessagevalue("");
 }
 
-function handleIncomingMessages(setMessages, currentChat) {
+function handleIncomingMessages(setMessages, currentChat, containerRef) {
   socket.on("transport_message", (message) => {
     if (message.sender === currentChat) {
       setMessages((messages) => [
@@ -72,12 +85,17 @@ function handleIncomingMessages(setMessages, currentChat) {
 }
 
 function ChatBox() {
+  const containerRef = useRef(null);
   const [messageValue, setMessageValue] = useState("");
   const [messages, setMessages] = useState([]);
   const currentChat = useSelector(
     (store) => store.currentChat.currentChatUsername
   );
   const isMounted = useRef(false);
+
+  useEffect(()=>{
+    scrollDown(containerRef, "smooth")
+  },[messages])
 
   useEffect(() => {
     if (isMounted.current) {
@@ -88,7 +106,7 @@ function ChatBox() {
   }, [currentChat]);
 
   useEffect(() => {
-    handleIncomingMessages(setMessages, currentChat);
+    handleIncomingMessages(setMessages, currentChat, containerRef);
   }, [currentChat]);
 
   return (
@@ -96,7 +114,7 @@ function ChatBox() {
       {currentChat ? (
         <>
           <div className={styles.topBar}></div>
-          <div className={styles.chatArea}>
+          <div className={styles.chatArea} ref={containerRef}>
             {messages.map((data, i) => (
               <Message data={data} key={i + 1} />
             ))}
@@ -113,7 +131,8 @@ function ChatBox() {
                     messageValue,
                     setMessageValue,
                     setMessages,
-                    currentChat
+                    currentChat,
+                    containerRef
                   );
                 }
               }}

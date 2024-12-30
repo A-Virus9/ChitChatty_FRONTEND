@@ -2,10 +2,10 @@ import styles from "../styles/landing.module.css";
 import style from "../styles/field.module.css";
 import Field from "../components/field";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../App";
 
-async function handleLogin(username, password, setErr) {
+async function handleLogin(username, password, setErr, navigate) {
   const data = {
     username,
     password,
@@ -13,8 +13,9 @@ async function handleLogin(username, password, setErr) {
   if (username && password) {
     try {
       const res = await api.post("/users/login", data, {withCredentials: true});
+      console.log(res.data.status)
       if (res.data.status === "success") {
-        alert("You are logged in!");
+        navigate("../home")
       }
       console.log(res.headers)
     } catch (err) {
@@ -32,6 +33,7 @@ function Login() {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
+  const navigate = useNavigate()
   return (
     <>
       <div className={styles.landing}>
@@ -52,7 +54,7 @@ function Login() {
           type="button"
           value="Login"
           className={styles.submit}
-          onClick={() => handleLogin(username, password, setErr)}
+          onClick={() => handleLogin(username, password, setErr, navigate)}
         />
         <div className={styles.alt_text}>
           Don&apos;t have a account?{" "}
