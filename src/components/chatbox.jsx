@@ -29,7 +29,7 @@ function Message({ data }) {
       }`}
     >
       <span className={styles.messageText}>{data.message}</span>
-      <span className={styles.time}>3:45PM</span>
+      <span className={styles.time}>{data.time}</span>
     </div>
   );
 }
@@ -68,17 +68,17 @@ function handleSend(
   socket.emit("message", data);
   setMessages((messages) => [
     ...messages,
-    { message: messageValue, type: "send" },
+    { message: messageValue, type: "send", time: Date.now() },
   ]);
   setMessagevalue("");
 }
 
-function handleIncomingMessages(setMessages, currentChat, containerRef) {
+function handleIncomingMessages(setMessages, currentChat) {
   socket.on("transport_message", (message) => {
     if (message.sender === currentChat) {
       setMessages((messages) => [
         ...messages,
-        { message: message.message, type: "receive" },
+        { message: message.message, type: "receive", time: message.time },
       ]);
     }
   });
