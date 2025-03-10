@@ -14,6 +14,19 @@ function scrollDown(containerRef, type) {
   }, 0);
 }
 
+function formatDateToAmPm(date) {
+  const newDate = new Date(date);
+
+  const hours = newDate.getHours();
+  const minutes = newDate.getMinutes();
+  const amPmHours = hours % 12 || 12;
+  const amPm = hours >= 12 ? 'PM' : 'AM';
+
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+  return `${amPmHours}:${formattedMinutes} ${amPm}`;
+}
+
 async function handleUserChange(currentChat, setMessages) {
   const res = await api.get(`/chats/getMessages?username=${currentChat}`, {
     withCredentials: true,
@@ -29,7 +42,7 @@ function Message({ data }) {
       }`}
     >
       <span className={styles.messageText}>{data.message}</span>
-      <span className={styles.time}>{data.time}</span>
+      <span className={styles.time}>{formatDateToAmPm(data.time)}</span>
     </div>
   );
 }
@@ -64,6 +77,7 @@ function handleSend(
   const data = {
     messageValue,
     receiver: currentChat,
+    time: Date.now()
   };
   socket.emit("message", data);
   setMessages((messages) => [
