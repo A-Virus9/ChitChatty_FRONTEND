@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import styles from "../styles/chatlist.module.css";
 
-import { api } from "../App";
+import { api, socket } from "../App";
 import { useDispatch, useSelector } from "react-redux";
-import {socket} from "../pages/home"
 
 async function handleInitialChats(setChats) {
   try {

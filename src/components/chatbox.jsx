@@ -1,9 +1,8 @@
 import styles from "../styles/chatbox.module.css";
 import { useState, useEffect, useRef } from "react";
 import Picker from "emoji-picker-react";
-import { api } from "../App";
+import { api, socket } from "../App";
 import { useSelector } from "react-redux";
-import { socket } from "../pages/home";
 
 function scrollDown(containerRef, type) {
   setTimeout(() => {

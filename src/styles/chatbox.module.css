@@ -23,7 +23,6 @@
 }
 
 .message {
-  min-height: 3rem;
   max-width: 40rem;
   padding: 1rem 1.3rem;
   border-radius: 0.4rem;
@@ -31,6 +30,8 @@
   flex-direction: column;
   justify-content: center;
   gap: 0.7rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .send {

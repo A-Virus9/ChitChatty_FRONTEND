@@ -5,14 +5,20 @@ import Login from "./pages/login";
 import Home from "./pages/home";
 // import Home from "./pages/home";
 import axios from "axios";
+import { io } from "socket.io-client";
 
 import { Provider } from "react-redux";
 import store from "./store";
 
-import { BACKEND_URL } from "./pages/home";
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://chitchatty-backend.onrender.com"
 
 export const api = axios.create({
   baseURL: BACKEND_URL,
+});
+
+export const socket = io.connect(BACKEND_URL, {
+  withCredentials: true,
+  autoConnect: false
 });
 
 function App() {
