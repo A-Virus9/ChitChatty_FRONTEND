@@ -8,12 +8,23 @@ async function handleInitialChats(setChats) {
   try {
     const res = await api.get("/chats/getChats", { withCredentials: true });
     const { chatList } = res.data;
-    chatList.map((user) => {
-      setChats((state) => [...state, { name: user, lastChat: "temp" }]);
+    chatList.map((data) => {
+      setChats((state) => [...state, { name: data.user, lastChat: "temp", status: data.status }]);
     });
   } catch (err) {
     console.log("No chats");
   }
+}
+
+function toggleOnlineStatus(setChats) {
+  socket.on("status_change", (data) => {
+    setChats((state) => {
+      const newState = [...state];
+      const index = newState.findIndex((e) => e.name === data.user);
+      newState[index].status = data.status;
+      return newState;
+    });
+  });
 }
 
 async function handleNewUser(newUser, setNewUser, setChats) {
@@ -23,7 +34,8 @@ async function handleNewUser(newUser, setNewUser, setChats) {
       withCredentials: true,
     });
     if (res.data.status === "added" || res.data.status === "already present") {
-      setChats((state) => [...state, { name: newUser, lastChat: "temp" }]);
+      const {status} = (await api.post("/users/isonline", data, {withCredentials: true})).data.status;
+      setChats((state) => [...state, { name: newUser, lastChat: "temp", status }]);
       const socketData = {
         receiver: newUser
       }
@@ -59,7 +71,7 @@ function Chat({ data }) {
         </div>
         <span className={styles.time}>3:45Pm</span>
       </div>
-      <div className={styles.online}></div>
+      {data.status==="online" && <div className={styles.online}></div>}
     </div>
   );
 }
@@ -70,6 +82,10 @@ function ChatList() {
   useEffect(() => {
     handleInitialChats(setChats);
   }, []);
+
+  useEffect(() => {
+    toggleOnlineStatus(setChats);
+  }, [])
 
   return (
     <div className={styles.chatlist}>

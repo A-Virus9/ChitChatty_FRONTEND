@@ -18,7 +18,7 @@ function formatDateToAmPm(date) {
 
   const hours = newDate.getHours();
   const minutes = newDate.getMinutes();
-  const amPmHours = hours % 12 || 12;
+  const amPmHours = hours % 12 || hours;
   const amPm = hours >= 12 ? 'PM' : 'AM';
 
   const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
