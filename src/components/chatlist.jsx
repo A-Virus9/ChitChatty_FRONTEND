@@ -7,18 +7,16 @@ import { useDispatch, useSelector } from "react-redux";
 async function handleInitialChats(setChats) {
   try {
     const res = await api.get("/chats/getChats", { withCredentials: true });
-    const { chatList } = res.data; // Remove 'await' here as res.data is already parsed
-    console.log("Received chatList:", chatList); // Debugging log
+    const { chatList } = res.data;
 
-    // Transform chatList into the correct format in one step
     const formattedChats = chatList.map((data) => ({
-      name: data.user, // Ensure 'user' matches backend property
+      name: data.user,
       lastChat: "temp",
       status: data.status,
     }));
 
-    // Set chats in one state update
     setChats(formattedChats);
+    return
   } catch (err) {
     console.log("Error fetching chats:", err);
   }
@@ -87,9 +85,11 @@ function Chat({ data }) {
 function ChatList() {
   const [newUser, setNewUser] = useState("");
   const [chats, setChats] = useState([]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     async function fetchChats() {
       await handleInitialChats(setChats);
+      setLoading(false);
     }
     fetchChats()
   }, []);
@@ -116,7 +116,7 @@ function ChatList() {
         </button>
       </div>
       <div className={styles.chat_list_box}>
-        {chats.map((e, i) => (
+        {!loading && chats.map((e, i) => (
           <Chat data={e} key={i} />
         ))}
       </div>
