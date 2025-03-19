@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 async function handleInitialChats(setChats) {
   try {
     const res = await api.get("/chats/getChats", { withCredentials: true });
-    const { chatList } = res.data;
+    const { chatList } = await res.data;
     console.log(chatList);
     chatList.map((data) => {
       setChats((state) => [...state, { name: data.user, lastChat: "temp", status: data.status }]);
@@ -81,7 +81,10 @@ function ChatList() {
   const [newUser, setNewUser] = useState("");
   const [chats, setChats] = useState([]);
   useEffect(() => {
-    handleInitialChats(setChats);
+    async function fetchChats() {
+      await handleInitialChats(setChats);
+    }
+    fetchChats()
   }, []);
 
   useEffect(() => {
