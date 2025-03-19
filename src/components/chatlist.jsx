@@ -8,6 +8,7 @@ async function handleInitialChats(setChats) {
   try {
     const res = await api.get("/chats/getChats", { withCredentials: true });
     const { chatList } = res.data;
+    console.log(chatList);
     chatList.map((data) => {
       setChats((state) => [...state, { name: data.user, lastChat: "temp", status: data.status }]);
     });
