@@ -7,13 +7,20 @@ import { useDispatch, useSelector } from "react-redux";
 async function handleInitialChats(setChats) {
   try {
     const res = await api.get("/chats/getChats", { withCredentials: true });
-    const { chatList } = await res.data;
-    console.log(chatList);
-    chatList.map((data) => {
-      setChats((state) => [...state, { name: data.user, lastChat: "temp", status: data.status }]);
-    });
+    const { chatList } = res.data; // Remove 'await' here as res.data is already parsed
+    console.log("Received chatList:", chatList); // Debugging log
+
+    // Transform chatList into the correct format in one step
+    const formattedChats = chatList.map((data) => ({
+      name: data.user, // Ensure 'user' matches backend property
+      lastChat: "temp",
+      status: data.status,
+    }));
+
+    // Set chats in one state update
+    setChats(formattedChats);
   } catch (err) {
-    console.log("No chats");
+    console.log("Error fetching chats:", err);
   }
 }
 
