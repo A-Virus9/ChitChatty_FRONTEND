@@ -16,7 +16,6 @@ async function handleInitialChats(setChats) {
     }));
 
     setChats(formattedChats);
-    return
   } catch (err) {
     console.log("Error fetching chats:", err);
   }
@@ -87,11 +86,7 @@ function ChatList() {
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    async function fetchChats() {
-      await handleInitialChats(setChats);
-      setLoading(false);
-    }
-    fetchChats()
+    handleInitialChats(setChats);
   }, []);
 
   useEffect(() => {
@@ -116,7 +111,7 @@ function ChatList() {
         </button>
       </div>
       <div className={styles.chat_list_box}>
-        {!loading && chats.map((e, i) => (
+        {chats.map((e, i) => (
           <Chat data={e} key={i} />
         ))}
       </div>
