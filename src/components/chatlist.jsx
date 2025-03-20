@@ -45,6 +45,7 @@ function Chat({ data }) {
   const currentChat = useSelector(
     (store) => store.currentChat.currentChatUsername
   );
+  console.log(data);
   return (
     <div
       onClick={() =>
