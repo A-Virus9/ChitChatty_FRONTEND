@@ -4,23 +4,6 @@ import styles from "../styles/chatlist.module.css";
 import { api, socket } from "../App";
 import { useDispatch, useSelector } from "react-redux";
 
-async function handleInitialChats(setChats) {
-  try {
-    const res = await api.get("/chats/getChats", { withCredentials: true });
-    const { chatList } = res.data;
-
-    const formattedChats = chatList.map((data) => ({
-      name: data.user,
-      lastChat: "temp",
-      status: data.status,
-    }));
-
-    setChats(formattedChats);
-  } catch (err) {
-    console.log("Error fetching chats:", err);
-  }
-}
-
 function toggleOnlineStatus(setChats) {
   socket.on("status_change", (data) => {
     setChats((state) => {
@@ -39,12 +22,17 @@ async function handleNewUser(newUser, setNewUser, setChats) {
       withCredentials: true,
     });
     if (res.data.status === "added" || res.data.status === "already present") {
-      const {status} = (await api.post("/users/isonline", data, {withCredentials: true})).data.status;
-      setChats((state) => [...state, { name: newUser, lastChat: "temp", status }]);
+      const { status } = (
+        await api.post("/users/isonline", data, { withCredentials: true })
+      ).data.status;
+      setChats((state) => [
+        ...state,
+        { name: newUser, lastChat: "temp", status },
+      ]);
       const socketData = {
-        receiver: newUser
-      }
-      socket.emit("instantAdd", socketData)
+        receiver: newUser,
+      };
+      socket.emit("instantAdd", socketData);
       setNewUser("");
     }
   } catch (err) {
@@ -76,7 +64,7 @@ function Chat({ data }) {
         </div>
         <span className={styles.time}>3:45Pm</span>
       </div>
-      {data.status==="online" && <div className={styles.online}></div>}
+      {data.status === "online" && <div className={styles.online}></div>}
     </div>
   );
 }
@@ -84,14 +72,32 @@ function Chat({ data }) {
 function ChatList() {
   const [newUser, setNewUser] = useState("");
   const [chats, setChats] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
+
+  async function handleInitialChats() {
+    try {
+      const res = await api.get("/chats/getChats", { withCredentials: true });
+      const { chatList } = res.data;
+
+      const formattedChats = chatList.map((data) => ({
+        name: data.user,
+        lastChat: "temp",
+        status: data.status,
+      }));
+
+      setChats(formattedChats);
+    } catch (err) {
+      console.log("Error fetching chats:", err);
+    }
+  }
+
   useEffect(() => {
-    handleInitialChats(setChats);
-  }, []);
+    handleInitialChats();
+  }, [setChats]);
 
   useEffect(() => {
     toggleOnlineStatus(setChats);
-  }, [])
+  }, []);
 
   return (
     <div className={styles.chatlist}>
