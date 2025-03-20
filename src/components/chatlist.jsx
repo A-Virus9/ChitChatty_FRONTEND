@@ -79,7 +79,7 @@ function ChatList() {
     try {
       const res = await api.get("/chats/getChats", { withCredentials: true });
       const { chatList } = res.data;
-      console.log("chatList", chatList);
+      console.log("chatList", res.data);
 
       const formattedChats = chatList.map((data) => ({
         name: data.user,
