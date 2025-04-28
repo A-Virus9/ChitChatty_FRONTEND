@@ -3,8 +3,9 @@ import styles from "../styles/chatlist.module.css";
 
 import { api, socket } from "../App";
 import { useDispatch, useSelector } from "react-redux";
+import store from "../store";
 
-async function handleInitialChats(setChats) {
+async function handleInitialChats(setChats, dispatch) {
   try {
     const res = await api.get("/chats/getChats", { withCredentials: true });
     const { chatList } = res.data;
@@ -13,7 +14,17 @@ async function handleInitialChats(setChats) {
       name: data.user,
       lastChat: "temp", 
       status: data.status,
+      unread: data.unread,
     }));
+
+    const storeChats = chatList.reduce((acc, data) => {
+      acc[data.user] = data.unread;
+      return acc;
+    }, {});
+
+    dispatch({ type: "chatList/setInitialUnread", payload: storeChats });
+
+    console.log("Formatted Chats:", formattedChats);
 
     setChats(formattedChats);
   } catch (err) {
@@ -57,15 +68,25 @@ async function handleNewUser(newUser, setNewUser, setChats) {
   }
 }
 
-function Chat({ data }) {
-  const dispatch = useDispatch();
+function Chat({ data, dispatch, setChats }) {
   const currentChat = useSelector(
-    (store) => store.currentChat.currentChatUsername
+    (store) => store.chatList.currentChatUsername
   );
+  const unreads = useSelector((store) => store.chatList.unread);
+  useEffect(() => {
+    setChats((state) => {
+      const newState = [...state];
+      const index = newState.findIndex((e) => e.name === data.name);
+      if (index !== -1) {
+        newState[index].unread = unreads[data.name] || 0;
+      }
+      return newState;
+    })
+  }, [unreads])
   return (
     <div
       onClick={() =>
-        dispatch({ type: "currentChat/updateCurrentChat", payload: data.name })
+        dispatch({ type: "chatList/updateCurrentChat", payload: data.name })
       }
       className={`${styles.chats} ${
         currentChat === data.name ? styles.current : 1
@@ -79,7 +100,10 @@ function Chat({ data }) {
           <span className={styles.name}>{data.name}</span>
           <span className={styles.lastChat}>{data.lastChat}</span>
         </div>
-        <span className={styles.time}>3:45Pm</span>
+        <div className={styles.right}>
+          {data.unread ? <div className={styles.unRead}>{data.unread}</div> : ""}
+          <span className={styles.time}>3:45Pm</span>
+        </div>
       </div>
       {data.status === "online" && <div className={styles.online}></div>}
     </div>
@@ -90,8 +114,10 @@ function ChatList() {
   const [newUser, setNewUser] = useState("");
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    handleInitialChats(setChats);
+    handleInitialChats(setChats, dispatch);
   }, []);
 
   useEffect(() => {
@@ -117,7 +143,7 @@ function ChatList() {
       </div>
       <div className={styles.chat_list_box}>
         {chats.map((e, i) => (
-          <Chat data={e} key={i} />
+          <Chat data={e} key={i} dispatch={dispatch} setChats={setChats}/>
         ))}
       </div>
     </div>

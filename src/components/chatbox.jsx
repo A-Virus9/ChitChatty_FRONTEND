@@ -2,7 +2,7 @@ import styles from "../styles/chatbox.module.css";
 import { useState, useEffect, useRef } from "react";
 import Picker from "emoji-picker-react";
 import { api, socket } from "../App";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 function scrollDown(containerRef, type) {
   setTimeout(() => {
@@ -19,7 +19,7 @@ function formatDateToAmPm(date) {
   const hours = newDate.getHours();
   const minutes = newDate.getMinutes();
   const amPmHours = hours % 12 || hours;
-  const amPm = hours >= 12 ? 'PM' : 'AM';
+  const amPm = hours >= 12 ? "PM" : "AM";
 
   const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
 
@@ -30,7 +30,7 @@ async function handleUserChange(currentChat, setMessages) {
   const res = await api.get(`/chats/getMessages?username=${currentChat}`, {
     withCredentials: true,
   });
-  setMessages(res.data.messages);
+  setMessages(res.data.chats.messages);
 }
 
 function Message({ data }) {
@@ -67,16 +67,11 @@ function EmojiInputButton({ setMessageValue }) {
   );
 }
 
-function handleSend(
-  messageValue,
-  setMessagevalue,
-  setMessages,
-  currentChat,
-) {
+function handleSend(messageValue, setMessagevalue, setMessages, currentChat) {
   const data = {
     messageValue,
     receiver: currentChat,
-    time: Date.now()
+    time: Date.now(),
   };
   socket.emit("message", data);
   setMessages((messages) => [
@@ -86,29 +81,19 @@ function handleSend(
   setMessagevalue("");
 }
 
-function handleIncomingMessages(setMessages, currentChat) {
-  socket.on("transport_message", (message) => {
-    if (message.sender === currentChat) {
-      setMessages((messages) => [
-        ...messages,
-        { message: message.message, type: "receive", time: message.time },
-      ]);
-    }
-  });
-}
-
 function ChatBox() {
   const containerRef = useRef(null);
   const [messageValue, setMessageValue] = useState("");
   const [messages, setMessages] = useState([]);
+  const dispatch = useDispatch();
   const currentChat = useSelector(
-    (store) => store.currentChat.currentChatUsername
+    (store) => store.chatList.currentChatUsername
   );
   const isMounted = useRef(false);
 
-  useEffect(()=>{
-    scrollDown(containerRef, "smooth")
-  },[messages])
+  useEffect(() => {
+    scrollDown(containerRef, "smooth");
+  }, [messages]);
 
   useEffect(() => {
     if (isMounted.current) {
@@ -119,7 +104,23 @@ function ChatBox() {
   }, [currentChat]);
 
   useEffect(() => {
-    handleIncomingMessages(setMessages, currentChat, containerRef);
+    const handleMessage = (message) => {
+      if (message.sender === currentChat) {
+        setMessages((messages) => [
+          ...messages,
+          { message: message.message, type: "receive", time: message.time },
+        ]);
+      } else {
+        dispatch({ type: "chatList/updateUnread", payload: message.sender });
+        socket.emit("increment_unread", message.sender);
+      }
+    };
+    
+    socket.on("transport_message", handleMessage);
+
+    return () => {
+      socket.off("transport_message", handleMessage);
+    };
   }, [currentChat]);
 
   return (

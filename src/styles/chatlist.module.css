@@ -102,12 +102,33 @@
 }
 
 .lastChat{
-    color: rgb(129, 129, 129);
+    color: rgb(165, 165, 165);
     font-size: 1.2rem;
 }
 
+.right{
+    display: flex;
+    flex-direction: row;
+    align-items: center; 
+    gap: 1rem;
+}
+
+.unRead{
+    border-radius: 50%;
+    min-width: 1.8rem;
+    min-height: 1.8rem;
+    background-color: rgb(64, 255, 47);
+    color: black;
+    font-size: 1.1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-weight: 900;
+}
+
 .time{
-    color: rgb(129, 129, 129)
+    color: rgb(165, 165, 165)
 }
 
 .online{

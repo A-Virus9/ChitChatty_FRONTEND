@@ -5,7 +5,10 @@ import { useNavigate } from "react-router-dom";
 
 const handleLanding = async (navigate) => {
   const token = Cookies.get("jwt");
-  !token ? navigate("login") : 1;
+  if(!token){
+    navigate("login");
+    return;
+  }
   try {
     const res = await api.post(
       "/users/checker",
@@ -14,7 +17,6 @@ const handleLanding = async (navigate) => {
         withCredentials: true
       }
     );
-    console.log(res.data);
     res.data.status === "user absent"
       ? navigate("signup")
       : res.data.status === "password changed"

@@ -1,22 +1,27 @@
 import {configureStore, createSlice} from "@reduxjs/toolkit"
 
-const currentChatInitialState = {
-    currentChatUsername: "",
-}
-
-const currentChatSlice = createSlice({
-    name: "currentChat",
-    initialState: currentChatInitialState,
+const chatListSlice = createSlice({
+    name: "chatList",
+    initialState: {
+        currentChatUsername: "",
+        unreads: {}
+    },
     reducers: {
         updateCurrentChat(state, action){
             state.currentChatUsername = action.payload
+        },
+        setInitialUnread(state, action){
+            state.unread = action.payload
+        },
+        updateUnread(state, action){
+            state.unread[action.payload] = (state.unread[action.payload] || 0) + 1
         }
     }
 })
 
 const store = configureStore({
     reducer: {
-        currentChat: currentChatSlice.reducer
+        chatList: chatListSlice.reducer
     }
 })
 
