@@ -11,38 +11,28 @@ import { useNavigate } from "react-router-dom";
 
 import { api } from "../App";
 
-const checkJWT = async (navigate, setIsAuthenticated) => {
+const checkJWT = async () => {
   const token = Cookies.get("jwt");
-  if (!token) {
-    navigate("/login");
-    return;
-  }
+  // if (!token) {
+  //   navigate("/login");
+  //   return;
+  // }
   try {
-    const res = await api.post(
-      "/users/checker",
-      {},
-      {
-        withCredentials: true,
-      }
-    );
-    if(res.data.status !== "success"){
-      navigate("/login");
-      return;
-    } 
+    
     socket.connect();
     socket.emit("start", "start");
-    setIsAuthenticated(true);
+    // setIsAuthenticated(true);
   } catch (err) {
     console.error(err);
   }
 };
 
 function Home() {
-  // const navigate = useNavigate();
-  // const [isAuthenticated, setIsAuthenticated] = useState(null);
-  // useEffect(() => {
-  //   checkJWT(navigate, setIsAuthenticated);
-  // }, [navigate]);
+  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  useEffect(() => {
+    checkJWT();
+  }, []);
 
   // if(isAuthenticated === null) 
   //   return <div>Loading...</div>;
