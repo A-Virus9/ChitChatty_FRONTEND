@@ -38,14 +38,14 @@ const checkJWT = async (navigate, setIsAuthenticated) => {
 };
 
 function Home() {
-  const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
-  useEffect(() => {
-    checkJWT(navigate, setIsAuthenticated);
-  }, [navigate]);
+  // const navigate = useNavigate();
+  // const [isAuthenticated, setIsAuthenticated] = useState(null);
+  // useEffect(() => {
+  //   checkJWT(navigate, setIsAuthenticated);
+  // }, [navigate]);
 
-  if(isAuthenticated === null) 
-    return <div>Loading...</div>;
+  // if(isAuthenticated === null) 
+  //   return <div>Loading...</div>;
 
   return (
     <>
