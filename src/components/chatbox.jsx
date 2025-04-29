@@ -68,15 +68,16 @@ function EmojiInputButton({ setMessageValue }) {
 }
 
 function handleSend(messageValue, setMessagevalue, setMessages, currentChat) {
+  if (messageValue.trim() === "") return;
   const data = {
-    messageValue,
+    message: messageValue.trim(),
     receiver: currentChat,
     time: Date.now(),
   };
   socket.emit("message", data);
   setMessages((messages) => [
     ...messages,
-    { message: messageValue, type: "send", time: Date.now() },
+    { message: messageValue.trim(), type: "send", time: Date.now() },
   ]);
   setMessagevalue("");
 }
@@ -115,7 +116,7 @@ function ChatBox() {
         socket.emit("increment_unread", message.sender);
       }
     };
-    
+
     socket.on("transport_message", handleMessage);
 
     return () => {
