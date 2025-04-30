@@ -12,19 +12,25 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../App";
 
 const checkJWT = async (navigate, setIsAuthenticated) => {
-  const token = Cookies.get("jwt");
-  console.log(token)
-  if (!token) {
-    navigate("/login");
-    return;
-  }
   try {
-    
+    // Make API call to validate the cookie
+    const res = await api.post(
+      "/users/checker",
+      {},
+      { withCredentials: true }
+    );
+
+    if (res.data.status !== "success") {
+      navigate("/login");
+      return;
+    }
+
     socket.connect();
     socket.emit("start", "start");
     setIsAuthenticated(true);
   } catch (err) {
     console.error(err);
+    navigate("/login");
   }
 };
 
@@ -35,8 +41,7 @@ function Home() {
     checkJWT(navigate, setIsAuthenticated);
   }, []);
 
-  if(isAuthenticated === null) 
-    return <div>Loading...</div>;
+  if (isAuthenticated === null) return <div>Loading...</div>;
 
   return (
     <>
