@@ -1,14 +1,8 @@
 import { api } from "../App";
 import { useEffect } from "react";
-import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
 const handleLanding = async (navigate) => {
-  const token = Cookies.get("jwt");
-  if(!token){
-    navigate("login");
-    return;
-  }
   try {
     const res = await api.post(
       "/users/checker",
@@ -25,7 +19,7 @@ const handleLanding = async (navigate) => {
       ? navigate("home")
       : 1;
   } catch (err) {
-    console.error(err);
+    navigate("login");
   }
 };
 

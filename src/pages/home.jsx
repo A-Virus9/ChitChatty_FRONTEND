@@ -12,7 +12,6 @@ import { api } from "../App";
 
 const checkJWT = async (navigate, setIsAuthenticated) => {
   try {
-    // Make API call to validate the cookie
     const res = await api.post(
       "/users/checker",
       {},
