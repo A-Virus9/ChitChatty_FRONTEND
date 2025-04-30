@@ -9,6 +9,7 @@ const chatListSlice = createSlice({
     reducers: {
         updateCurrentChat(state, action){
             state.currentChatUsername = action.payload
+            state.unreads[action.payload] = 0
         },
         setInitialUnread(state, action){
             state.unread = action.payload

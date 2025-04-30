@@ -12,7 +12,7 @@ async function handleInitialChats(setChats, dispatch) {
 
     const formattedChats = chatList.map((data) => ({
       name: data.user,
-      lastChat: "temp", 
+      lastChat: "temp",
       status: data.status,
       unread: data.unread,
     }));
@@ -35,9 +35,7 @@ async function handleInitialChats(setChats, dispatch) {
 function toggleOnlineStatus(setChats) {
   socket.on("status_change", (data) => {
     setChats((state) => {
-      const newState = [...state];
-      const index = newState.findIndex((e) => e.name === data.user);
-      newState[index].status = data.status;
+      const newState = state.map((chat) => (chat.name === data.user ? { ...chat, status: data.status } : chat));
       return newState;
     });
   });
@@ -57,16 +55,27 @@ async function handleNewUser(newUser, setNewUser, setChats) {
         ...state,
         { name: newUser, lastChat: "temp", status },
       ]);
-      const socketData = {
-        receiver: newUser,
-      };
-      socket.emit("instantAdd", socketData);
+      socket.emit("instantAdd", { receiver: newUser });
       setNewUser("");
     }
   } catch (err) {
     console.log(err);
   }
 }
+
+// async function handleNewUser(newUser, setNewUser, setChats) {
+//   try {
+//     const { data } = await api.post("/chats/add", { newUser }, { withCredentials: true });
+//     if (["added", "already present"].includes(data.status)) {
+//       const { status } = (await api.post("/users/isonline", { newUser }, { withCredentials: true })).data.status;
+//       setChats((prev) => [...prev, { name: newUser, lastChat: "temp", status }]);
+//       socket.emit("instantAdd", { receiver: newUser });
+//       setNewUser("");
+//     }
+//   } catch (err) {
+//     console.log(err);
+//   }
+// }
 
 function Chat({ data, dispatch, setChats }) {
   const currentChat = useSelector(
@@ -81,13 +90,18 @@ function Chat({ data, dispatch, setChats }) {
         newState[index].unread = unreads[data.name] || 0;
       }
       return newState;
-    })
-  }, [unreads])
+    });
+  }, [unreads]);
   return (
     <div
-      onClick={() =>
+      onClick={() => {
         dispatch({ type: "chatList/updateCurrentChat", payload: data.name })
-      }
+        setChats((state) => {
+          const newState = state.map((chat) => chat.name === data.name? {...chat, unread: 0} : chat);
+          return newState
+        })
+        socket.emit("update_unread", { to_update: data.name, type: "reset" });
+      }}
       className={`${styles.chats} ${
         currentChat === data.name ? styles.current : 1
       }`}
@@ -101,7 +115,11 @@ function Chat({ data, dispatch, setChats }) {
           <span className={styles.lastChat}>{data.lastChat}</span>
         </div>
         <div className={styles.right}>
-          {data.unread ? <div className={styles.unRead}>{data.unread}</div> : ""}
+          {data.unread ? (
+            <div className={styles.unRead}>{data.unread}</div>
+          ) : (
+            ""
+          )}
           <span className={styles.time}>3:45Pm</span>
         </div>
       </div>
@@ -143,7 +161,7 @@ function ChatList() {
       </div>
       <div className={styles.chat_list_box}>
         {chats.map((e, i) => (
-          <Chat data={e} key={i} dispatch={dispatch} setChats={setChats}/>
+          <Chat data={e} key={i} dispatch={dispatch} setChats={setChats} />
         ))}
       </div>
     </div>

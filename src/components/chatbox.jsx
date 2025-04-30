@@ -1,8 +1,9 @@
 import styles from "../styles/chatbox.module.css";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Picker from "emoji-picker-react";
 import { api, socket } from "../App";
 import { useDispatch, useSelector } from "react-redux";
+import { throttle } from 'lodash';
 
 function scrollDown(containerRef, type) {
   setTimeout(() => {
@@ -67,20 +68,39 @@ function EmojiInputButton({ setMessageValue }) {
   );
 }
 
-function handleSend(messageValue, setMessagevalue, setMessages, currentChat) {
-  if (messageValue.trim() === "") return;
-  const data = {
-    message: messageValue.trim(),
-    receiver: currentChat,
-    time: Date.now(),
-  };
-  socket.emit("message", data);
-  setMessages((messages) => [
-    ...messages,
-    { message: messageValue.trim(), type: "send", time: Date.now() },
-  ]);
-  setMessagevalue("");
-}
+// function handleSend(messageValue, setMessagevalue, setMessages, currentChat) {
+//   if (messageValue.trim() === "") return;
+//   const data = {
+//     message: messageValue.trim(),
+//     receiver: currentChat,
+//     time: Date.now(),
+//   };
+//   socket.emit("message", data);
+//   setMessages((messages) => [
+//     ...messages,
+//     { message: messageValue.trim(), type: "send", time: Date.now() },
+//   ]);
+//   setMessagevalue("");
+// }
+
+// const throttledClick = useCallback(throttle((messageValue, setMessagevalue, setMessages, currentChat) => {
+//   if (messageValue.trim() === "") return;
+//     const data = {
+//       message: messageValue.trim(),
+//       receiver: currentChat,
+//       time: Date.now(),
+//     };
+//     socket.emit("message", data);
+//     setMessages((messages) => [
+//       ...messages,
+//       { message: messageValue.trim(), type: "send", time: Date.now() },
+//     ]);
+//     setMessagevalue("");
+// }, 500), []);
+
+// const handleSend = (messageValue, setMessagevalue, setMessages, currentChat) => {
+//   throttledClick(messageValue, setMessagevalue, setMessages, currentChat);
+// };
 
 function ChatBox() {
   const containerRef = useRef(null);
@@ -91,6 +111,28 @@ function ChatBox() {
     (store) => store.chatList.currentChatUsername
   );
   const isMounted = useRef(false);
+
+  const throttledClick = useCallback(
+    throttle((messageValue, setMessageValue, setMessages, currentChat) => {
+      if (messageValue.trim() === "") return;
+      const data = {
+        message: messageValue.trim(),
+        receiver: currentChat,
+        time: Date.now(),
+      };
+      socket.emit("message", data);
+      setMessages((messages) => [
+        ...messages,
+        { message: messageValue.trim(), type: "send", time: Date.now() },
+      ]);
+      setMessageValue("");
+    }, 250),
+    []
+  );
+
+  const handleSend = (messageValue, setMessageValue, setMessages, currentChat) => {
+    throttledClick(messageValue, setMessageValue, setMessages, currentChat);
+  };
 
   useEffect(() => {
     scrollDown(containerRef, "smooth");
@@ -113,7 +155,7 @@ function ChatBox() {
         ]);
       } else {
         dispatch({ type: "chatList/updateUnread", payload: message.sender });
-        socket.emit("increment_unread", message.sender);
+        socket.emit("update_unread", {to_update: message.sender, type: "increment"});
       }
     };
 
