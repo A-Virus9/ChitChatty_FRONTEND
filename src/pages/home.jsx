@@ -6,14 +6,12 @@ import ChatBox from "../components/chatbox";
 import { useState, useEffect } from "react";
 import { socket } from "../App";
 
-import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
 import { api } from "../App";
 
 const checkJWT = async (navigate, setIsAuthenticated) => {
   try {
-    // Make API call to validate the cookie
     const res = await api.post(
       "/users/checker",
       {},
