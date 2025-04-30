@@ -6,7 +6,6 @@ import ChatBox from "../components/chatbox";
 import { useState, useEffect } from "react";
 import { socket } from "../App";
 
-import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
 import { api } from "../App";
